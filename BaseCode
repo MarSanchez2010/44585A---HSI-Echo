@@ -1,0 +1,199 @@
+#pragma region VEXcode Generated Robot Configuration
+// Make sure all required headers are included.
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+
+
+#include "vex.h"
+
+using namespace vex;
+
+// Brain should be defined by default
+brain Brain;
+
+
+// START V5 MACROS
+#define waitUntil(condition)                                                   \
+  do {                                                                         \
+    wait(5, msec);                                                             \
+  } while (!(condition))
+
+#define repeat(iterations)                                                     \
+  for (int iterator = 0; iterator < iterations; iterator++)
+// END V5 MACROS
+
+
+// Robot configuration code.
+
+
+
+// generating and setting random seed
+void initializeRandomSeed(){
+  int systemTime = Brain.Timer.systemHighResolution();
+  double batteryCurrent = Brain.Battery.current();
+  double batteryVoltage = Brain.Battery.voltage(voltageUnits::mV);
+
+  // Combine these values into a single integer
+  int seed = int(batteryVoltage + batteryCurrent * 100) + systemTime;
+
+  // Set the seed
+  srand(seed);
+}
+
+
+
+void vexcodeInit() {
+
+  //Initializing random seed.
+  initializeRandomSeed(); 
+}
+
+
+// Helper to make playing sounds from the V5 in VEXcode easier and
+// keeps the code cleaner by making it clear what is happening.
+void playVexcodeSound(const char *soundName) {
+  printf("VEXPlaySound:%s\n", soundName);
+  wait(5, msec);
+}
+
+#pragma endregion VEXcode Generated Robot Configuration
+// ---------------------------------------------------------------------------
+// VEXcode Generated Robot Configuration
+// ---------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+#include "vex.h"
+
+using namespace vex;
+
+
+// ---------------------------------------------------------------------------
+// Main Robot Configuration
+// ---------------------------------------------------------------------------
+
+controller Controller1 = controller(primary);
+
+// Drive motors
+motor leftMotorA = motor(PORT19, ratio6_1, true);
+motor leftMotorB = motor(PORT20, ratio6_1, false);
+motor leftMotorC = motor(PORT9, ratio6_1, true);
+motor_group LeftDriveSmart = motor_group(leftMotorA, leftMotorB, leftMotorC);
+
+motor rightMotorA = motor(PORT11, ratio6_1, true);
+motor rightMotorB = motor(PORT12, ratio6_1, false);
+motor rightMotorC = motor(PORT1, ratio6_1, false);
+motor_group RightDriveSmart = motor_group(rightMotorA, rightMotorB, rightMotorC);
+
+drivetrain Drivetrain = drivetrain(LeftDriveSmart, RightDriveSmart, 219.44, 11.938, 330.2, mm, 1.3333);
+
+// Extra motors
+motor IntakeStage3(PORT15, ratio18_1, false);
+motor IntakeStage1(PORT17, ratio18_1, false);
+motor IntakeStage2(PORT14, ratio18_1, false);
+
+// Pneumatic piston
+digital_out Descore(Brain.ThreeWirePort.A); // Controls Descore Mech Piston
+digital_out Matchload(Brain.ThreeWirePort.B); // Controls Matchloader Piston
+// Remote control flags
+bool RemoteControlCodeEnabled = true;
+bool DrivetrainLNeedsToBeStopped_Controller1 = true;
+bool DrivetrainRNeedsToBeStopped_Controller1 = true;
+
+// Controller input monitoring task
+int rc_auto_loop_function_Controller1() {
+  while (true) {
+    if (RemoteControlCodeEnabled) {
+      int drivetrainLeftSideSpeed = Controller1.Axis2.position() + Controller1.Axis4.position();
+      int drivetrainRightSideSpeed = Controller1.Axis2.position() - Controller1.Axis4.position();
+
+      if (drivetrainLeftSideSpeed < 5 && drivetrainLeftSideSpeed > -5) {
+        if (DrivetrainLNeedsToBeStopped_Controller1) {
+          LeftDriveSmart.stop();
+          DrivetrainLNeedsToBeStopped_Controller1 = false;
+        }
+      } else {
+        DrivetrainLNeedsToBeStopped_Controller1 = true;
+      }
+
+      if (drivetrainRightSideSpeed < 5 && drivetrainRightSideSpeed > -5) {
+        if (DrivetrainRNeedsToBeStopped_Controller1) {
+          RightDriveSmart.stop();
+          DrivetrainRNeedsToBeStopped_Controller1 = false;
+        }
+      } else {
+        DrivetrainRNeedsToBeStopped_Controller1 = true;
+      }
+
+      if (DrivetrainLNeedsToBeStopped_Controller1) {
+        LeftDriveSmart.setVelocity(drivetrainLeftSideSpeed, percent);
+        LeftDriveSmart.spin(forward);
+      }
+      if (DrivetrainRNeedsToBeStopped_Controller1) {
+        RightDriveSmart.setVelocity(drivetrainRightSideSpeed, percent);
+        RightDriveSmart.spin(forward);
+      }
+    }
+    wait(20, msec);
+  }
+  return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Main Function
+// ---------------------------------------------------------------------------
+
+int main() {
+  vexcodeInit();
+  task rc_auto_loop_task(rc_auto_loop_function_Controller1);
+
+  while (true) {
+    // Set intake motor velocity and torque
+    IntakeStage3.setVelocity(100, percent);
+    IntakeStage2.setVelocity(100, percent);
+    IntakeStage1.setVelocity(100, percent);
+    IntakeStage3.setMaxTorque(100, percent);
+    IntakeStage2.setMaxTorque(100, percent);
+    IntakeStage1.setMaxTorque(100, percent);
+
+    // Control IntakeStage3 with L1 and L2
+    if (Controller1.ButtonL1.pressing()) {
+      IntakeStage3.spin(forward);
+    } else if (Controller1.ButtonL2.pressing()) {
+      IntakeStage3.spin(reverse);
+    } else {
+      IntakeStage3.stop(coast);
+    }
+
+    // Control IntakeStage1 and IntakeStage2 with R1 and R2
+    if (Controller1.ButtonR1.pressing()) {
+      IntakeStage1.spin(reverse);
+      IntakeStage2.spin(forward);
+    } else if (Controller1.ButtonR2.pressing()) {
+      IntakeStage1.spin(forward);
+      IntakeStage2.spin(reverse);
+    } else {
+      IntakeStage1.stop(coast);
+      IntakeStage2.stop(coast);
+    }
+
+    // Descore Pneumatic piston control with ButtonX and ButtonA
+    if (Controller1.ButtonX.pressing()) {
+      Descore.set(true);  // Extend piston
+    } else if (Controller1.ButtonA.pressing()) {
+      Descore.set(false); // Retract piston
+    }
+    // Matchload Pnuematic piston control with ButtonY and ButtonB
+    if (Controller1.ButtonY.pressing()) {
+      Matchload.set(true);  // Extend piston
+    } else if (Controller1.ButtonB.pressing()) {
+      Matchload.set(false); // Retract piston
+    }
+    wait(20, msec); // Prevent CPU overload
+  }
+}
