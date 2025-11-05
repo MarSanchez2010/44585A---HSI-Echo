@@ -1,0 +1,13 @@
+    // Pneumatic controls
+    // Descore Pneumatic piston control with ButtonX and ButtonA
+    if (Controller1.ButtonX.pressing()) {
+      Descore.set(true);  // Extend piston
+    } else if (Controller1.ButtonA.pressing()) {
+      Descore.set(false); // Retract piston
+    }
+    // Matchload Pnuematic piston control with ButtonY and ButtonB
+    if (Controller1.ButtonY.pressing()) {
+      Matchload.set(true);  // Extend piston
+    } else if (Controller1.ButtonB.pressing()) {
+      Matchload.set(false); // Retract piston
+    }
