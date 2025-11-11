@@ -1,0 +1,41 @@
+void autonomous(void) {
+  //Ensure the drivetrain velocities are slowed for accuracy
+  Drivetrain.setDriveVelocity(20, percent);
+  Drivetrain.setTurnVelocity(25, percent);
+  IntakeStage3.setVelocity(100, percent);
+  IntakeStage2.setVelocity(100, percent);
+  IntakeStage1.setVelocity(100, percent);
+
+//first turns, aligns with the group of 3 blocks directly in front of our starting position.
+  Drivetrain.driveFor(forward, 38, inches);
+  Drivetrain.turnFor(left, 15, degrees);
+  wait(100, msec);
+
+  IntakeStage1.spin(reverse);
+  Drivetrain.driveFor(forward, 35, inches);
+  wait(2, seconds);
+  IntakeStage2.spin(forward);
+  wait(1, seconds);
+  IntakeStage1.stop();
+  IntakeStage2.stop();
+
+//Drivetrain lines up with the goal
+  Drivetrain.turnFor(right, 15, degrees);
+  Drivetrain.driveFor(reverse, 38, inches);
+  Drivetrain.turnFor(left, 90, degrees);
+  Drivetrain.driveFor(forward, 43, inches);
+  Drivetrain.turnFor(left, 90, degrees);
+  Drivetrain.driveFor(reverse, 33, inches);
+
+  IntakeStage2.spin(reverse);
+  IntakeStage3.spin(forward);
+  wait(1, seconds);
+  IntakeStage1.spin(forward);
+  IntakeStage2.spin(forward);
+  IntakeStage3.spin(forward);
+  wait(6, seconds);
+  IntakeStage1.stop();
+  IntakeStage2.stop();
+  IntakeStage3.stop();
+
+}
