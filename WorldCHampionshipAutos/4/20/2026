@@ -1,1 +1,521 @@
+void SoloAWP() {
 
+  // Assumes:
+// const int DRIVE_SPEED = 60;
+// const int TURN_SPEED  = 50;
+//
+// extern ez::Drive chassis;
+// extern pros::Motor IntakeStage1, IntakeStage2, IntakeStage3;
+// extern ez::Piston Descore, Matchload;
+
+  // Descore on
+  Descore.set(true);
+
+  // ---------------------------
+  // FIRST TURNS + ALIGN
+  // ---------------------------
+  chassis.pid_drive_set(22_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // left 20 deg
+  chassis.pid_turn_set(-20_deg, TURN_SPEED);
+  chassis.pid_wait();
+  stage1.move(-127); // reverse
+
+  pros::delay(10);
+
+  // intake + slow drive
+  stage1.move(-127); // reverse
+  stage2.move(127);
+  chassis.pid_drive_set(16_in, 30, true);
+  chassis.pid_wait();
+
+  pros::delay(50);
+  stage2.move(127);
+  pros::delay(1000);
+
+  stage1.move(0);
+  stage2.move(0);
+
+  chassis.pid_drive_set(-4_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // ---------------------------
+  // LINE UP WITH GOAL
+  // ---------------------------
+  // left 110 deg
+  chassis.pid_turn_set(-150_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-16_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  stage3.move(127);
+  pros::delay(1000);
+  stage3.move(0);
+
+  stage1.move(-127);
+  stage2.move(127);
+
+  chassis.pid_drive_set(45_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // right 45 deg (negative angle if your convention is CCW positive)
+  chassis.pid_turn_set(-90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+
+  // drive in front of the goal
+  chassis.pid_drive_set(15_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // Turn towards the goal
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait();
+  //back into the goal
+  chassis.pid_drive_set(-23_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // ---------------------------
+  // SCORE SEQUENCE
+  // ---------------------------
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(127);
+  pros::delay(2000);
+
+  stage1.move(0);
+  stage2.move(0);
+  stage3.move(0);
+
+  Descore.set(false);
+
+  // ---------------------------
+  // FINAL MOVES
+  // ---------------------------
+  chassis.pid_drive_set(16_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // right 70 deg
+  chassis.pid_turn_set(120_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // left 80 deg
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-26_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  Matchloader.set(true);
+}
+
+void LeftSideAuto() {
+  // The first parameter is target inches
+  // The second parameter is max speed the robot will drive at
+  // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
+  // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
+
+  // Assumes:
+// const int DRIVE_SPEED = 60;
+// const int TURN_SPEED  = 50;
+//
+// extern ez::Drive chassis;
+// extern pros::Motor IntakeStage1, IntakeStage2, IntakeStage3;
+// extern ez::Piston Descore, Matchload;
+
+  // Descore on
+  Descore.set(true);
+  IntakeVertical.set(true);
+  // ---------------------------
+  // FIRST TURNS + ALIGN
+  // ---------------------------
+  chassis.pid_drive_set(22_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // left 20 deg
+  chassis.pid_turn_set(-20_deg, TURN_SPEED);
+  chassis.pid_wait();
+  stage1.move(-127); // reverse
+  stage2.move(-127); // reverse
+  pros::delay(10);
+
+  // intake + slow drive
+  stage1.move(-127); // reverse
+  stage2.move(127);
+  chassis.pid_drive_set(16_in, 30, true);
+  chassis.pid_wait();
+
+  pros::delay(50);
+  stage2.move(127);
+  pros::delay(1000);
+
+  stage1.move(0);
+  stage2.move(0);
+
+  chassis.pid_drive_set(-3_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // ---------------------------
+  // LINE UP WITH GOAL
+  // ---------------------------
+  // left 110 deg
+  chassis.pid_turn_set(-150_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-16_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  stage3.move(60);
+  pros::delay(1000);
+  stage3.move(0);
+
+  stage1.move(-127);
+  stage2.move(127);
+
+  chassis.pid_drive_set(45_in, DRIVE_SPEED, true);
+  MiddleGoal.set(true);
+  IntakeVertical.set(false);
+  chassis.pid_wait();
+
+  // right 45 deg (negative angle if your convention is CCW positive)
+  chassis.pid_turn_set(-90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+
+  // drive in front of the goal
+  chassis.pid_drive_set(13_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // Turn towards the goal
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait();
+  //back into the goal
+  chassis.pid_drive_set(-23_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // ---------------------------
+  // SCORE SEQUENCE
+  // ---------------------------
+  stage1.move(127);
+  stage2.move(127);
+  stage3.move(127);
+  pros::delay(2000);
+
+  stage1.move(0);
+  stage2.move(0);
+  stage3.move(0);
+
+  Descore.set(false);
+
+  // ---------------------------
+  // FINAL MOVES
+  // ---------------------------
+  chassis.pid_drive_set(16_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // right 70 deg
+  chassis.pid_turn_set(120_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // left 80 deg
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-26_in, 127, true);
+  chassis.pid_wait();
+}
+
+///
+// Turn Example
+///
+
+
+void RightSideAuto() {  //RIGHT SIDE AUTONOMOUS
+  // The first parameter is the target in degrees
+  // The second parameter is max speed the robot will drive at
+
+Descore.set(true);
+// ---------------------------
+// FIRST TURNS + ALIGN
+// ---------------------------
+chassis.pid_drive_set(20_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+MiddleGoal.set(true);
+// left 20 deg  → becomes right 20 deg
+chassis.pid_turn_set(20_deg, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+stage1.move(-127);
+
+pros::delay(10);
+
+// intake + slow drive
+stage1.move(-127);
+stage2.move(127);
+chassis.pid_drive_set(16_in, 30, true);
+chassis.pid_wait_quick_chain();
+
+pros::delay(50);
+stage2.move(127);
+pros::delay(1000);
+
+stage1.move(0);
+stage2.move(0);
+
+chassis.pid_drive_set(-4_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+// ---------------------------
+// LINE UP WITH GOAL
+// ---------------------------
+// left 150 deg → becomes right 150 deg
+chassis.pid_turn_set(150_deg, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+
+
+chassis.pid_drive_set(25_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+// right 90 deg → becomes left 90 deg
+chassis.pid_turn_set(90_deg, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+
+// drive in front of the goal
+chassis.pid_drive_set(15_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+// Turn toward the goal
+// 180 stays 180 (mirrors onto itself)
+chassis.pid_turn_set(180_deg, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+
+// back into the goal
+chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+// ---------------------------
+// SCORE SEQUENCE
+// ---------------------------
+stage1.move(127);
+stage2.move(127);
+stage3.move(127);
+pros::delay(3000);
+
+stage1.move(0);
+stage2.move(0);
+stage3.move(0);
+
+
+// ---------------------------
+// FINAL MOVES
+// ---------------------------
+  chassis.pid_drive_set(12_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+  // right 70 deg
+  chassis.pid_turn_set(110_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-13_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  Descore.set(true);
+  // left 80 deg
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  Descore.set(false);
+
+  chassis.pid_drive_set(-21_in, 127, true);
+  chassis.pid_wait();
+
+}
+
+
+///
+// Combining Turn + Drive
+///
+void AutonomousSkills() {
+  // The first parameter is the target in degrees
+  // The second parameter is max speed the robot will drive at
+
+Descore.set(true);
+
+// ---------------------------
+// FIRST TURNS + ALIGN
+// ---------------------------
+chassis.pid_drive_set(20_in, 80, true);
+chassis.pid_wait();
+
+// left 20 deg  → becomes right 20 deg
+chassis.pid_turn_set(20_deg, TURN_SPEED);
+chassis.pid_wait();
+stage1.move(-127);
+
+pros::delay(10);
+
+// intake + slow drive
+stage1.move(-127);
+stage2.move(127);
+chassis.pid_drive_set(16_in, 30, true);
+chassis.pid_wait();
+
+pros::delay(50);
+stage2.move(127);
+pros::delay(1000);
+
+stage1.move(0);
+stage2.move(0);
+
+chassis.pid_drive_set(-4_in, 80, true);
+chassis.pid_wait();
+
+// ---------------------------
+// LINE UP WITH GOAL
+// ---------------------------
+// left 150 deg → becomes right 150 deg
+chassis.pid_turn_set(150_deg, TURN_SPEED);
+chassis.pid_wait();
+
+
+chassis.pid_drive_set(25_in, 80, true);
+chassis.pid_wait();
+
+// right 90 deg → becomes left 90 deg
+chassis.pid_turn_set(90_deg, TURN_SPEED);
+chassis.pid_wait();
+
+// drive in front of the goal
+chassis.pid_drive_set(15_in, 80, true);
+chassis.pid_wait();
+
+// Turn toward the goal
+// 180 stays 180 (mirrors onto itself)
+chassis.pid_turn_set(180_deg, TURN_SPEED);
+chassis.pid_wait();
+
+// back into the goal
+chassis.pid_drive_set(-12_in, 80, true);
+chassis.pid_wait();
+
+// ---------------------------
+// SCORE SEQUENCE
+// ---------------------------
+stage1.move(127);
+stage2.move(127);
+stage3.move(127);
+pros::delay(3000);
+
+stage1.move(0);
+stage2.move(0);
+stage3.move(0);
+
+
+// ---------------------------
+// FINAL MOVES
+// ---------------------------
+  chassis.pid_drive_set(12_in, 80, true);
+  chassis.pid_wait();
+
+  // right 70 deg
+  chassis.pid_turn_set(110_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-13_in, 80, true);
+  chassis.pid_wait();
+  Descore.set(true);
+  // left 80 deg
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait();
+  Descore.set(false);
+
+  chassis.pid_drive_set(-21_in, 80, true);
+  chassis.pid_wait();
+//PARK ZONE
+  chassis.pid_drive_set(22_in, 80, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(270_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(35_in, 80, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  stage1.move(-127); // reverse
+  stage2.move(127);
+  stage3.move(127);   //CLear Park Zone
+
+  chassis.pid_drive_set(50_in, 127, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(185_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_turn_set(175_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_turn_set(185_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_turn_set(175_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_turn_set(185_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_turn_set(175_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(20_in, 127, true);
+  chassis.pid_wait();
+}
+
+
+
+void drive_and_turn() {
+  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(45_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(-45_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-24_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+}
+
+///
+// Wait Until and Changing Max Speed
+///
+void wait_until_change_speed() {
+  // pid_wait_until will wait until the robot gets to a desired position
+
+  // When the robot gets to 6 inches slowly, the robot will travel the remaining distance at full speed
+  chassis.pid_drive_set(24_in, 30, true);
+  chassis.pid_wait_until(6_in);
+  chassis.pid_speed_max_set(DRIVE_SPEED);  // After driving 6 inches at 30 speed, the robot will go the remaining distance at DRIVE_SPEED
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(45_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(-45_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  // When the robot gets to -6 inches slowly, the robot will travel the remaining distance at full speed
+  chassis.pid_drive_set(-24_in, 30, true);
+  chassis.pid_wait_until(-6_in);
+  chassis.pid_speed_max_set(DRIVE_SPEED);  // After driving 6 inches at 30 speed, the robot will go the remaining distance at DRIVE_SPEED
+  chassis.pid_wait();
+}
+
+///
