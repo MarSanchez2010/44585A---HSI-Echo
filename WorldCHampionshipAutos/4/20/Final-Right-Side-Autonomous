@@ -1,0 +1,97 @@
+void RightSideAuto() {  //RIGHT SIDE AUTONOMOUS
+  // The first parameter is the target in degrees
+  // The second parameter is max speed the robot will drive at
+
+Descore.set(true);
+// ---------------------------
+// FIRST TURNS + ALIGN
+// ---------------------------
+chassis.pid_drive_set(20_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+MiddleGoal.set(true);
+// left 20 deg  → becomes right 20 deg
+chassis.pid_turn_set(20_deg, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+stage1.move(-127);
+
+pros::delay(10);
+
+// intake + slow drive
+stage1.move(-127);
+stage2.move(127);
+chassis.pid_drive_set(16_in, 30, true);
+chassis.pid_wait_quick_chain();
+
+pros::delay(50);
+stage2.move(127);
+pros::delay(1000);
+
+stage1.move(0);
+stage2.move(0);
+
+chassis.pid_drive_set(-4_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+// ---------------------------
+// LINE UP WITH GOAL
+// ---------------------------
+// left 150 deg → becomes right 150 deg
+chassis.pid_turn_set(150_deg, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+
+
+chassis.pid_drive_set(18_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+// right 90 deg → becomes left 90 deg
+chassis.pid_turn_set(90_deg, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+
+// drive in front of the goal
+chassis.pid_drive_set(12_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+// Turn toward the goal
+// 180 stays 180 (mirrors onto itself)
+chassis.pid_turn_set(180_deg, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+
+// back into the goal
+chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+// ---------------------------
+// SCORE SEQUENCE
+// ---------------------------
+stage1.move(127);
+stage2.move(127);
+stage3.move(127);
+pros::delay(3000);
+
+stage1.move(0);
+stage2.move(0);
+stage3.move(0);
+
+
+// ---------------------------
+// FINAL MOVES
+// ---------------------------
+  chassis.pid_drive_set(12_in, DRIVE_SPEED, true);
+chassis.pid_wait_quick_chain();
+
+  // right 70 deg
+  chassis.pid_turn_set(110_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+
+  chassis.pid_drive_set(-13_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  Descore.set(true);
+  // left 80 deg
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  Descore.set(false);
+
+  chassis.pid_drive_set(-21_in, 127, true);
+  chassis.pid_wait();
+
+}
