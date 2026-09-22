@@ -1,0 +1,176 @@
+#pragma region VEXcode Generated Robot Configuration
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+
+#include "vex.h"
+
+using namespace vex;
+
+// Required for competition control
+competition Competition;
+
+// Brain
+brain Brain;
+
+// Macros
+#define waitUntil(condition) do { wait(5, msec); } while (!(condition))
+#define repeat(iterations) for (int iterator = 0; iterator < iterations; iterator++)
+
+// -----------------------------
+// Robot Configuration
+// -----------------------------
+controller Controller1;
+
+// Drivetrain motors
+motor LeftFront(PORT11, gearSetting::ratio18_1, false);
+motor LeftBack(PORT12, gearSetting::ratio18_1, false);
+motor RightFront(PORT19, gearSetting::ratio18_1, true);
+motor RightBack(PORT20, gearSetting::ratio18_1, true);
+
+// Subsystem motors
+motor LiftL(PORT9, gearSetting::ratio18_1, false);
+motor LiftR(PORT10, gearSetting::ratio18_1, true);
+motor ClawAngle(PORT8, gearSetting::ratio18_1, false);
+motor ClawRotation(PORT21, gearSetting::ratio18_1, false);
+
+// Pneumatic clamp
+digital_out Clamp(Brain.ThreeWirePort.E);
+
+// Random seed
+void initializeRandomSeed() {
+  int systemTime = Brain.Timer.systemHighResolution();
+  double batteryCurrent = Brain.Battery.current();
+  double batteryVoltage = Brain.Battery.voltage(voltageUnits::mV);
+  int seed = int(batteryVoltage + batteryCurrent * 100) + systemTime;
+  srand(seed);
+}
+
+void vexcodeInit() {
+  initializeRandomSeed();
+
+  // Set stopping modes
+  LiftL.setStopping(hold);
+  LiftR.setStopping(hold);
+  ClawAngle.setStopping(hold);
+  ClawRotation.setStopping(hold);
+
+  LeftFront.setStopping(coast);
+  LeftBack.setStopping(coast);
+  RightFront.setStopping(coast);
+  RightBack.setStopping(coast);
+}
+
+void playVexcodeSound(const char *soundName) {
+  printf("VEXPlaySound:%s\n", soundName);
+  wait(5, msec);
+}
+
+#pragma endregion VEXcode Generated Robot Configuration
+
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Full VEXcode V5 Robot Program                                           */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+
+using namespace vex;
+
+// -----------------------------
+// Autonomous (optional)
+// -----------------------------
+void autonomous() {
+  // Add auton code here if needed
+}
+
+// -----------------------------
+// User Control
+// -----------------------------
+void usercontrol() {
+
+  bool clampState = false;
+
+  while (true) {
+
+    // -----------------------------
+    // Tank Drive
+    // -----------------------------
+    int leftPower = Controller1.Axis3.position();
+    int rightPower = Controller1.Axis2.position();
+
+    LeftFront.spin(fwd, leftPower, pct);
+    LeftBack.spin(fwd, leftPower, pct);
+    RightFront.spin(fwd, rightPower, pct);
+    RightBack.spin(fwd, rightPower, pct);
+
+    // -----------------------------
+    // Lift Control
+    // -----------------------------
+    if (Controller1.ButtonR1.pressing()) {
+      LiftL.spin(fwd, 90, pct);
+      LiftR.spin(fwd, 90, pct);
+    }
+    else if (Controller1.ButtonR2.pressing()) {
+      LiftL.spin(reverse, 90, pct);
+      LiftR.spin(reverse, 90, pct);
+    }
+    else {
+      LiftL.stop();  // HOLD
+      LiftR.stop();
+    }
+
+    // -----------------------------
+    // Claw Angle
+    // -----------------------------
+    if (Controller1.ButtonL1.pressing()) {
+      ClawAngle.spin(fwd, 100, pct);
+    }
+    else if (Controller1.ButtonL2.pressing()) {
+      ClawAngle.spin(reverse, 100, pct);
+    }
+    else {
+      ClawAngle.stop();  // HOLD
+    }
+
+    // -----------------------------
+    // Claw Rotation
+    // -----------------------------
+    if (Controller1.ButtonUp.pressing()) {
+      ClawRotation.spin(fwd, 80, pct);
+    }
+    else if (Controller1.ButtonDown.pressing()) {
+      ClawRotation.spin(reverse, 80, pct);
+    }
+    else {
+      ClawRotation.stop();  // HOLD
+    }
+
+    // -----------------------------
+    // Piston Toggle
+    // -----------------------------
+    if (Controller1.ButtonB.pressing()) {
+      clampState = !clampState;
+      Clamp.set(clampState);
+      Controller1.rumble("..");
+      wait(300, msec);
+    }
+
+    wait(20, msec);
+  }
+}
+
+// -----------------------------
+// Main
+// -----------------------------
+int main() {
+  vexcodeInit();
+
+  Competition.autonomous(autonomous);
+  Competition.drivercontrol(usercontrol);
+
+  while (true) {
+    wait(100, msec);
+  }
+}
