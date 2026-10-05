@@ -1,0 +1,20 @@
+liftL.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    liftR.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+
+        bool up   = master.get_digital(DIGITAL_R1);
+        bool down = master.get_digital(DIGITAL_R2);
+
+        if (up) {
+            liftL.move(60);
+            liftR.move(60);
+        }
+        else if (down) {
+            liftL.move(-60);
+            liftR.move(-60);
+        }
+        else {
+            // Hold position
+            liftL.move(0);
+            liftR.move(0);
+        }
